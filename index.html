@@ -79,16 +79,11 @@
 <main>
   <section id="com-codigo" class="oculto">
     <h1>✅ Loja autorizada</h1>
-    <p>Copie os dados abaixo e cole no terminal do Monitor Shopee. O código vale só por alguns minutos.</p>
+    <p>Clique em <strong>Copiar</strong> e cole no terminal do Monitor Shopee. O código vale só por alguns minutos.</p>
 
     <div class="campo">
-      <div class="rotulo">Código (code)</div>
-      <div class="linha"><code id="code"></code><button data-copiar="code">Copiar</button></div>
-    </div>
-
-    <div class="campo" id="bloco-shop">
-      <div class="rotulo">ID da loja (shop_id)</div>
-      <div class="linha"><code id="shop_id"></code><button data-copiar="shop_id">Copiar</button></div>
+      <div class="rotulo">Texto para colar no terminal</div>
+      <div class="linha"><code id="tudo"></code><button data-copiar="tudo">Copiar</button></div>
     </div>
 
     <p class="aviso">🔒 Esta página não envia nada para lugar nenhum. Depois de copiar, pode fechar.</p>
@@ -103,17 +98,17 @@
 <script>
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
-  const shopId = params.get("shop_id") || params.get("main_account_id");
 
   if (code) {
+    // Junta so os campos que interessam ao Monitor Shopee
+    const campos = new URLSearchParams();
+    for (const nome of ["code", "shop_id", "main_account_id", "state"]) {
+      const valor = params.get(nome);
+      if (valor) campos.set(nome, valor);
+    }
     document.getElementById("com-codigo").classList.remove("oculto");
     document.getElementById("sem-codigo").classList.add("oculto");
-    document.getElementById("code").textContent = code;
-    if (shopId) {
-      document.getElementById("shop_id").textContent = shopId;
-    } else {
-      document.getElementById("bloco-shop").classList.add("oculto");
-    }
+    document.getElementById("tudo").textContent = campos.toString();
     // Tira o codigo da barra de endereco (e do historico) depois de exibido
     history.replaceState(null, "", window.location.pathname);
   }
