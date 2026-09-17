@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Nao envia o endereco (com o codigo) para nenhum outro site -->
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Monitor Shopee – Autorização</title>
+<style>
+  :root {
+    --fundo: #f4f6f9;
+    --cartao: #ffffff;
+    --texto: #1c2430;
+    --suave: #5b6675;
+    --borda: #d9dee6;
+    --destaque: #1f4e79;
+    --ok: #2e7d32;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fundo: #11161d;
+      --cartao: #1a212b;
+      --texto: #e8edf3;
+      --suave: #9aa6b5;
+      --borda: #2c3642;
+      --destaque: #7fb3e6;
+      --ok: #81c784;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background: var(--fundo);
+    color: var(--texto);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main {
+    width: 100%;
+    max-width: 32rem;
+    background: var(--cartao);
+    border: 1px solid var(--borda);
+    border-radius: 1rem;
+    padding: 1.75rem;
+  }
+  h1 { margin: 0 0 .5rem; font-size: 1.4rem; }
+  p { color: var(--suave); line-height: 1.5; margin: 0 0 1.25rem; }
+  .campo { margin-bottom: 1rem; }
+  .rotulo { font-size: .85rem; font-weight: 600; margin-bottom: .35rem; }
+  .linha { display: flex; gap: .5rem; }
+  code {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    padding: .65rem .75rem;
+    border: 1px solid var(--borda);
+    border-radius: .5rem;
+    font-size: .95rem;
+  }
+  button {
+    flex-shrink: 0;
+    border: none;
+    border-radius: .5rem;
+    padding: 0 1rem;
+    background: var(--destaque);
+    color: var(--cartao);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .aviso { font-size: .85rem; margin: 1.25rem 0 0; }
+  .oculto { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <section id="com-codigo" class="oculto">
+    <h1>✅ Loja autorizada</h1>
+    <p>Copie os dados abaixo e cole no terminal do Monitor Shopee. O código vale só por alguns minutos.</p>
+
+    <div class="campo">
+      <div class="rotulo">Código (code)</div>
+      <div class="linha"><code id="code"></code><button data-copiar="code">Copiar</button></div>
+    </div>
+
+    <div class="campo" id="bloco-shop">
+      <div class="rotulo">ID da loja (shop_id)</div>
+      <div class="linha"><code id="shop_id"></code><button data-copiar="shop_id">Copiar</button></div>
+    </div>
+
+    <p class="aviso">🔒 Esta página não envia nada para lugar nenhum. Depois de copiar, pode fechar.</p>
+  </section>
+
+  <section id="sem-codigo">
+    <h1>Monitor Shopee</h1>
+    <p>Página de retorno da autorização. Nenhum código foi recebido.</p>
+  </section>
+</main>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const shopId = params.get("shop_id") || params.get("main_account_id");
+
+  if (code) {
+    document.getElementById("com-codigo").classList.remove("oculto");
+    document.getElementById("sem-codigo").classList.add("oculto");
+    document.getElementById("code").textContent = code;
+    if (shopId) {
+      document.getElementById("shop_id").textContent = shopId;
+    } else {
+      document.getElementById("bloco-shop").classList.add("oculto");
+    }
+    // Tira o codigo da barra de endereco (e do historico) depois de exibido
+    history.replaceState(null, "", window.location.pathname);
+  }
+
+  document.querySelectorAll("[data-copiar]").forEach((botao) => {
+    botao.addEventListener("click", async () => {
+      const texto = document.getElementById(botao.dataset.copiar).textContent;
+      try {
+        await navigator.clipboard.writeText(texto);
+        botao.textContent = "Copiado!";
+        setTimeout(() => (botao.textContent = "Copiar"), 1500);
+      } catch {
+        botao.textContent = "Selecione e copie";
+      }
+    });
+  });
+</script>
+</body>
+</html>
